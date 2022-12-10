@@ -2,6 +2,7 @@ package main
 
 import (
 	"image/color"
+	"time"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
@@ -23,15 +24,32 @@ func (b *block) draw(imd *imdraw.IMDraw) {
 type ball struct {
 	rect pixel.Circle
 	color color.Color
-	x float64
-	y float64
-	vel float64
+	pos pixel.Vec
+	vel pixel.Vec
 }
 
 func (b *ball) draw(imd *imdraw.IMDraw) {
 	imd.Color = b.color
-	imd.Push(pixel.V(b.x, b.y))
+	imd.Push(b.pos)
 	imd.Circle(15, 0)
+}
+
+func (b * ball) update(dt float64, win *pixelgl.Window) {
+	b.pos.X += b.vel.X
+	b.pos.Y += b.vel.Y
+
+
+	// collision with walls
+	if b.pos.X - b.rect.Radius < 0 || b.pos.X + b.rect.Radius > win.Bounds().W() {
+		b.vel.X *= -1
+	}
+
+	if b.pos.Y - b.rect.Radius < 0 || b.pos.Y +b.rect.Radius > win.Bounds().H() {
+		b.vel.Y *= -1
+	}
+
+	b.rect.Center.X = b.pos.X
+	b.rect.Center.Y = b.pos.Y
 }
 
 func createWindow() *pixelgl.Window {
@@ -44,6 +62,7 @@ func createWindow() *pixelgl.Window {
 	if err != nil {
 		panic(err)
 	}
+	win.SetSmooth(true)
 	return win
 }
 
@@ -59,19 +78,28 @@ func run() {
 	test_ball := ball {
 		color: colornames.Green,
 		rect: pixel.C(pixel.V(win.Bounds().W(), win.Bounds().H()), 15),
-		x: 300,
-		y: 300,
+		pos: pixel.V(300, 300),
+		vel: pixel.V(0.3,0.3),
 	}
 
 	imd := imdraw.New(nil)
 	imd.Precision = 32
 
+	last := time.Now()
 	for !win.Closed() {
+		dt := time.Since(last).Seconds()
+		last = time.Now()
 		win.Clear(colornames.Darkslateblue)
+		
+		
+		// imd drawings 
+		imd.Clear()
 		test_block.draw(imd)
 		test_ball.draw(imd)
-		
 		imd.Draw(win)
+
+		// update
+		test_ball.update(dt, win)
 		win.Update()
 	}
 	
