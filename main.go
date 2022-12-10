@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
+	"golang.org/x/image/colornames"
 )
 
 func createWindow() *pixelgl.Window {
@@ -22,8 +23,10 @@ func run() {
 	win := createWindow()
 
 	for !win.Closed() {
+		win.Clear(colornames.Darkslateblue)
 		win.Update()
 	}
+	
 }
 
 func main() {
