@@ -34,7 +34,7 @@ func (b *ball) draw(imd *imdraw.IMDraw) {
 	imd.Circle(15, 0)
 }
 
-func (b * ball) update(dt float64, win *pixelgl.Window) {
+func (b * ball) update(dt float64, win *pixelgl.Window, blocks block) {
 	b.pos.X += b.vel.X
 	b.pos.Y += b.vel.Y
 
@@ -47,6 +47,23 @@ func (b * ball) update(dt float64, win *pixelgl.Window) {
 	if b.pos.Y - b.rect.Radius < 0 || b.pos.Y +b.rect.Radius > win.Bounds().H() {
 		b.vel.Y *= -1
 	}
+
+	// colision with block
+
+	if (b.rect.IntersectRect(blocks.rect) != pixel.V(-0, -0)) {
+		if (b.pos.X + b.rect.Radius >= blocks.rect.Min.X && b.pos.X - b.rect.Radius <= blocks.rect.Max.X) {
+			b.vel.X *= -1
+			b.pos.X += b.vel.X
+		}
+	
+		if (b.pos.Y + b.rect.Radius >= blocks.rect.Min.Y && b.pos.Y - b.rect.Radius <= blocks.rect.Max.Y) {
+			b.vel.Y *= -1
+			b.pos.Y += b.vel.Y
+		}
+	}
+	
+
+	
 
 	b.rect.Center.X = b.pos.X
 	b.rect.Center.Y = b.pos.Y
@@ -72,7 +89,7 @@ func run() {
 	// Create stuff
 	test_block := block {
 		color: colornames.Red,
-		rect: pixel.R(5, win.Bounds().H() -100, 105, win.Bounds().H() -50),
+		rect: pixel.R(5, win.Bounds().H() -100, 205, win.Bounds().H() -10),
 	}
 
 	test_ball := ball {
@@ -99,7 +116,7 @@ func run() {
 		imd.Draw(win)
 
 		// update
-		test_ball.update(dt, win)
+		test_ball.update(dt, win, test_block)
 		win.Update()
 	}
 	
