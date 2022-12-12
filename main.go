@@ -2,6 +2,7 @@ package main
 
 import (
 	"image/color"
+	"math"
 	"time"
 
 	"github.com/faiface/pixel"
@@ -9,6 +10,7 @@ import (
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
 )
+var blocks []block = make([]block, 7)
 
 type block struct {
 	rect pixel.Rect
@@ -34,7 +36,7 @@ func (b *ball) draw(imd *imdraw.IMDraw) {
 	imd.Circle(15, 0)
 }
 
-func (b * ball) update(dt float64, win *pixelgl.Window, blocks block) {
+func (b * ball) update(dt float64, win *pixelgl.Window) {
 	b.pos.X += b.vel.X
 	b.pos.Y += b.vel.Y
 
@@ -44,23 +46,38 @@ func (b * ball) update(dt float64, win *pixelgl.Window, blocks block) {
 		b.vel.X *= -1
 	}
 
-	if b.pos.Y - b.rect.Radius < 0 || b.pos.Y +b.rect.Radius > win.Bounds().H() {
+	if b.pos.Y - b.rect.Radius < 0 || b.pos.Y + b.rect.Radius > win.Bounds().H() {
 		b.vel.Y *= -1
 	}
 
 	// colision with block
-
-	if (b.rect.IntersectRect(blocks.rect) != pixel.V(-0, -0)) {
-		if (b.pos.X + b.rect.Radius >= blocks.rect.Min.X && b.pos.X - b.rect.Radius <= blocks.rect.Max.X) {
-			b.vel.X *= -1
-			b.pos.X += b.vel.X
+	deleted := false
+	for i, blk := range blocks {
+		collision := b.rect.IntersectRect(blk.rect)
+		 
+		if (b.rect.IntersectRect(blk.rect) != pixel.V(-0, -0)) {
+			
+			// if (b.pos.Y + b.rect.Radius >= blk.rect.Min.Y && b.pos.Y - b.rect.Radius <= blk.rect.Max.Y) {
+			if math.Abs(collision.Y) > math.Abs(collision.X) {
+				blocks = append(blocks[:i], blocks[i+1:]...)
+				deleted = true
+				b.vel.Y *= -1
+				continue
+			}
+			
+			if (b.pos.X + b.rect.Radius >= blk.rect.Min.X && b.pos.X - b.rect.Radius <= blk.rect.Max.X) {
+				if !deleted {
+					blocks = append(blocks[:i], blocks[i+1:]...)
+				deleted = true
+				}
+				b.vel.X *= -1
+			}
+		
+			
 		}
-	
-		if (b.pos.Y + b.rect.Radius >= blocks.rect.Min.Y && b.pos.Y - b.rect.Radius <= blocks.rect.Max.Y) {
-			b.vel.Y *= -1
-			b.pos.Y += b.vel.Y
-		}
+		deleted = false
 	}
+
 	
 
 	
@@ -87,9 +104,18 @@ func run() {
 	win := createWindow()
 
 	// Create stuff
-	test_block := block {
-		color: colornames.Red,
-		rect: pixel.R(5, win.Bounds().H() -100, 205, win.Bounds().H() -10),
+	
+	delimeter := 15.0
+	var spaceForBlocksLastLine = 100.0
+	
+	var currentStart = 0.0
+	for i := range blocks {
+		currentStart += delimeter
+		blocks[i] = block{
+			color: colornames.Beige,
+			rect: pixel.R(currentStart, win.Bounds().H() -100, currentStart + spaceForBlocksLastLine + delimeter, win.Bounds().H() - 50),
+		}
+		currentStart += spaceForBlocksLastLine + delimeter
 	}
 
 	test_ball := ball {
@@ -111,12 +137,14 @@ func run() {
 		
 		// imd drawings 
 		imd.Clear()
-		test_block.draw(imd)
+		for _, b := range blocks {
+			b.draw(imd)
+		}
 		test_ball.draw(imd)
 		imd.Draw(win)
 
 		// update
-		test_ball.update(dt, win, test_block)
+		test_ball.update(dt, win)
 		win.Update()
 	}
 	
