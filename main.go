@@ -14,7 +14,6 @@ var blocks []block = make([]block, 7)
 
 type player struct {
 	rect pixel.Rect
-	pos pixel.Vec
 	vel pixel.Vec
 	color color.Color
 }
@@ -25,9 +24,30 @@ func (p *player) draw(imd *imdraw.IMDraw) {
 	imd.Rectangle(0)
 }
 
-// func (p *player) update(dt float64, win pixelgl.Window) {
+func (p *player) update(dt float64, win pixelgl.Window) {
+	// player movement
+	if win.Pressed(pixelgl.KeyLeft) {
+		p.rect.Min.X -= p.vel.X
+		p.rect.Max.X -= p.vel.X
+	}
 
-// }
+	if win.Pressed(pixelgl.KeyRight) {
+		p.rect.Min.X += p.vel.X
+		p.rect.Max.X += p.vel.X
+	}
+
+	if win.Pressed(pixelgl.KeyUp) {
+		p.rect.Min.Y += p.vel.Y
+		p.rect.Max.Y += p.vel.Y
+	}
+
+	if win.Pressed(pixelgl.KeyDown) {
+		p.rect.Min.Y -= p.vel.Y
+		p.rect.Max.Y -= p.vel.Y
+	}
+
+
+}
 
 type block struct {
 	rect pixel.Rect
@@ -125,12 +145,11 @@ func run() {
 		color: colornames.Green,
 		rect: pixel.C(pixel.V(win.Bounds().W(), win.Bounds().H()), 15),
 		pos: pixel.V(300, 300),
-		vel: pixel.V(0.3,0.3),
+		vel: pixel.V(0.1,0.3),
 	}
 
 	test_player := player {
 		color: colornames.Springgreen,
-		pos: pixel.V(300, 100),
 		rect: pixel.R(300 - 100, 50, 300 + 100, 75),
 		vel: pixel.V(0.2, 0.2),
 	}
@@ -155,6 +174,7 @@ func run() {
 		imd.Draw(win)
 
 		// update
+		test_player.update(dt, *win)
 		test_ball.update(dt, win)
 		win.Update()
 	}
