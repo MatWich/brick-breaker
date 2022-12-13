@@ -12,6 +12,23 @@ import (
 )
 var blocks []block = make([]block, 7)
 
+type player struct {
+	rect pixel.Rect
+	pos pixel.Vec
+	vel pixel.Vec
+	color color.Color
+}
+
+func (p *player) draw(imd *imdraw.IMDraw) {
+	imd.Color = p.color
+	imd.Push(p.rect.Min, p.rect.Max)
+	imd.Rectangle(0)
+}
+
+// func (p *player) update(dt float64, win pixelgl.Window) {
+
+// }
+
 type block struct {
 	rect pixel.Rect
 	color color.Color
@@ -51,7 +68,6 @@ func (b * ball) update(dt float64, win *pixelgl.Window) {
 	}
 
 	// colision with block
-	deleted := false
 	for i, blk := range blocks {
 		collision := b.rect.IntersectRect(blk.rect)
 		 
@@ -60,27 +76,14 @@ func (b * ball) update(dt float64, win *pixelgl.Window) {
 			// if (b.pos.Y + b.rect.Radius >= blk.rect.Min.Y && b.pos.Y - b.rect.Radius <= blk.rect.Max.Y) {
 			if math.Abs(collision.Y) > math.Abs(collision.X) {
 				blocks = append(blocks[:i], blocks[i+1:]...)
-				deleted = true
 				b.vel.Y *= -1
 				continue
-			}
-			
-			if (b.pos.X + b.rect.Radius >= blk.rect.Min.X && b.pos.X - b.rect.Radius <= blk.rect.Max.X) {
-				if !deleted {
-					blocks = append(blocks[:i], blocks[i+1:]...)
-				deleted = true
-				}
+			} else {
+				blocks = append(blocks[:i], blocks[i+1:]...)
 				b.vel.X *= -1
 			}
-		
-			
 		}
-		deleted = false
 	}
-
-	
-
-	
 
 	b.rect.Center.X = b.pos.X
 	b.rect.Center.Y = b.pos.Y
@@ -125,6 +128,13 @@ func run() {
 		vel: pixel.V(0.3,0.3),
 	}
 
+	test_player := player {
+		color: colornames.Springgreen,
+		pos: pixel.V(300, 100),
+		rect: pixel.R(300 - 100, 50, 300 + 100, 75),
+		vel: pixel.V(0.2, 0.2),
+	}
+
 	imd := imdraw.New(nil)
 	imd.Precision = 32
 
@@ -140,6 +150,7 @@ func run() {
 		for _, b := range blocks {
 			b.draw(imd)
 		}
+		test_player.draw(imd)
 		test_ball.draw(imd)
 		imd.Draw(win)
 
