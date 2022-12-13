@@ -27,26 +27,33 @@ func (p *player) draw(imd *imdraw.IMDraw) {
 func (p *player) update(dt float64, win pixelgl.Window) {
 	// player movement
 	if win.Pressed(pixelgl.KeyLeft) {
-		p.rect.Min.X -= p.vel.X
-		p.rect.Max.X -= p.vel.X
+		if !(p.rect.Min.X - p.vel.X < 0) {
+			p.rect.Min.X -= p.vel.X
+			p.rect.Max.X -= p.vel.X
+		}
 	}
 
 	if win.Pressed(pixelgl.KeyRight) {
-		p.rect.Min.X += p.vel.X
-		p.rect.Max.X += p.vel.X
-	}
+		if !(p.rect.Max.X + p.vel.X > win.Bounds().W()) {
+			p.rect.Min.X += p.vel.X
+			p.rect.Max.X += p.vel.X
+		}
+	}	
 
+	// should not be able to go higher than 1/3 height of the screen
 	if win.Pressed(pixelgl.KeyUp) {
-		p.rect.Min.Y += p.vel.Y
-		p.rect.Max.Y += p.vel.Y
+		if !(p.rect.Max.Y + p.vel.Y > win.Bounds().H() / 3) {
+			p.rect.Min.Y += p.vel.Y
+			p.rect.Max.Y += p.vel.Y
+		}
 	}
 
 	if win.Pressed(pixelgl.KeyDown) {
-		p.rect.Min.Y -= p.vel.Y
-		p.rect.Max.Y -= p.vel.Y
+		if !(p.rect.Min.Y - p.vel.Y < 0) {
+			p.rect.Min.Y -= p.vel.Y
+			p.rect.Max.Y -= p.vel.Y
+		}
 	}
-
-
 }
 
 type block struct {
