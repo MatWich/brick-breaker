@@ -12,6 +12,12 @@ import (
 )
 var blocks []block = make([]block, 7)
 
+var test_player = player {
+	color: colornames.Springgreen,
+	rect: pixel.R(300 - 100, 50, 300 + 100, 75),
+	vel: pixel.V(0.2, 0.2),
+}
+
 type player struct {
 	rect pixel.Rect
 	vel pixel.Vec
@@ -112,6 +118,18 @@ func (b * ball) update(dt float64, win *pixelgl.Window) {
 		}
 	}
 
+	// colision with player
+	var collision = b.rect.IntersectRect(test_player.rect)
+	if collision != pixel.V(-0, -0) {
+		if math.Abs(collision.Y) > math.Abs(collision.X) {
+			b.vel.Y *= -1
+			b.pos.Y += 2 * b.vel.Y +collision.Y
+		} else {
+			b.vel.X *= -1
+			b.pos.X += 2 * b.vel.X + collision.X
+		}
+	} 
+		
 	b.rect.Center.X = b.pos.X
 	b.rect.Center.Y = b.pos.Y
 }
@@ -121,12 +139,14 @@ func createWindow() *pixelgl.Window {
 		Title: "Brick Breaker",
 		Bounds: pixel.R(0, 0, 1024, 768),
 		VSync: false,
+		
 	}
 	win, err := pixelgl.NewWindow(cfg)
 	if err != nil {
 		panic(err)
 	}
 	win.SetSmooth(true)
+	
 	return win
 }
 
@@ -152,14 +172,10 @@ func run() {
 		color: colornames.Green,
 		rect: pixel.C(pixel.V(win.Bounds().W(), win.Bounds().H()), 15),
 		pos: pixel.V(300, 300),
-		vel: pixel.V(0.1,0.3),
+		vel: pixel.V(0.3,0.3),
 	}
 
-	test_player := player {
-		color: colornames.Springgreen,
-		rect: pixel.R(300 - 100, 50, 300 + 100, 75),
-		vel: pixel.V(0.2, 0.2),
-	}
+	
 
 	imd := imdraw.New(nil)
 	imd.Precision = 32
