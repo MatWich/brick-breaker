@@ -1,137 +1,20 @@
 package main
 
 import (
-	"image/color"
-	"math"
 	"time"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
+	"github.com/MatWich/brick-breaker/classes"
 )
-var blocks []block = make([]block, 7)
+var blocks []classes.Block = []classes.Block{}
 
-var test_player = player {
-	color: colornames.Springgreen,
-	rect: pixel.R(300 - 100, 50, 300 + 100, 75),
-	vel: pixel.V(0.2, 0.2),
-}
-
-type player struct {
-	rect pixel.Rect
-	vel pixel.Vec
-	color color.Color
-}
-
-func (p *player) draw(imd *imdraw.IMDraw) {
-	imd.Color = p.color
-	imd.Push(p.rect.Min, p.rect.Max)
-	imd.Rectangle(0)
-}
-
-func (p *player) update(dt float64, win pixelgl.Window) {
-	// player movement
-	if win.Pressed(pixelgl.KeyLeft) {
-		if !(p.rect.Min.X - p.vel.X < 0) {
-			p.rect.Min.X -= p.vel.X
-			p.rect.Max.X -= p.vel.X
-		}
-	}
-
-	if win.Pressed(pixelgl.KeyRight) {
-		if !(p.rect.Max.X + p.vel.X > win.Bounds().W()) {
-			p.rect.Min.X += p.vel.X
-			p.rect.Max.X += p.vel.X
-		}
-	}	
-
-	// should not be able to go higher than 1/3 height of the screen
-	if win.Pressed(pixelgl.KeyUp) {
-		if !(p.rect.Max.Y + p.vel.Y > win.Bounds().H() / 3) {
-			p.rect.Min.Y += p.vel.Y
-			p.rect.Max.Y += p.vel.Y
-		}
-	}
-
-	if win.Pressed(pixelgl.KeyDown) {
-		if !(p.rect.Min.Y - p.vel.Y < 0) {
-			p.rect.Min.Y -= p.vel.Y
-			p.rect.Max.Y -= p.vel.Y
-		}
-	}
-}
-
-type block struct {
-	rect pixel.Rect
-	color color.Color
-}
-
-func (b *block) draw(imd *imdraw.IMDraw) {
-	imd.Color = b.color
-	imd.Push(b.rect.Min, b.rect.Max)
-	imd.Rectangle(0)
-}
-
-type ball struct {
-	rect pixel.Circle
-	color color.Color
-	pos pixel.Vec
-	vel pixel.Vec
-}
-
-func (b *ball) draw(imd *imdraw.IMDraw) {
-	imd.Color = b.color
-	imd.Push(b.pos)
-	imd.Circle(15, 0)
-}
-
-func (b * ball) update(dt float64, win *pixelgl.Window) {
-	b.pos.X += b.vel.X
-	b.pos.Y += b.vel.Y
-
-
-	// collision with walls
-	if b.pos.X - b.rect.Radius < 0 || b.pos.X + b.rect.Radius > win.Bounds().W() {
-		b.vel.X *= -1
-	}
-
-	if b.pos.Y - b.rect.Radius < 0 || b.pos.Y + b.rect.Radius > win.Bounds().H() {
-		b.vel.Y *= -1
-	}
-
-	// colision with block
-	for i, blk := range blocks {
-		collision := b.rect.IntersectRect(blk.rect)
-		 
-		if (b.rect.IntersectRect(blk.rect) != pixel.V(-0, -0)) {
-			
-			// if (b.pos.Y + b.rect.Radius >= blk.rect.Min.Y && b.pos.Y - b.rect.Radius <= blk.rect.Max.Y) {
-			if math.Abs(collision.Y) > math.Abs(collision.X) {
-				blocks = append(blocks[:i], blocks[i+1:]...)
-				b.vel.Y *= -1
-				continue
-			} else {
-				blocks = append(blocks[:i], blocks[i+1:]...)
-				b.vel.X *= -1
-			}
-		}
-	}
-
-	// colision with player
-	var collision = b.rect.IntersectRect(test_player.rect)
-	if collision != pixel.V(-0, -0) {
-		if math.Abs(collision.Y) > math.Abs(collision.X) {
-			b.vel.Y *= -1
-			b.pos.Y += 2 * b.vel.Y +collision.Y
-		} else {
-			b.vel.X *= -1
-			b.pos.X += 2 * b.vel.X + collision.X
-		}
-	} 
-		
-	b.rect.Center.X = b.pos.X
-	b.rect.Center.Y = b.pos.Y
+var player = classes.Player {
+	Color: colornames.Springgreen,
+	Rect: pixel.R(300 - 100, 50, 300 + 100, 75),
+	Vel: pixel.V(0.2, 0.2),
 }
 
 func createWindow() *pixelgl.Window {
@@ -159,23 +42,21 @@ func run() {
 	var spaceForBlocksLastLine = 100.0
 	
 	var currentStart = 0.0
-	for i := range blocks {
+	for i := 0; i < 7; i++ {
 		currentStart += delimeter
-		blocks[i] = block{
-			color: colornames.Beige,
-			rect: pixel.R(currentStart, win.Bounds().H() -100, currentStart + spaceForBlocksLastLine + delimeter, win.Bounds().H() - 50),
-		}
+		blocks = append(blocks, classes.Block{
+			Color: colornames.Beige,
+			Rect: pixel.R(currentStart, win.Bounds().H() -100, currentStart + spaceForBlocksLastLine + delimeter, win.Bounds().H() - 50),
+		})
 		currentStart += spaceForBlocksLastLine + delimeter
 	}
 
-	test_ball := ball {
-		color: colornames.Green,
-		rect: pixel.C(pixel.V(win.Bounds().W(), win.Bounds().H()), 15),
-		pos: pixel.V(300, 300),
-		vel: pixel.V(0.3,0.3),
+	test_ball := classes.Ball {
+		Color: colornames.Green,
+		Rect: pixel.C(pixel.V(win.Bounds().W(), win.Bounds().H()), 15),
+		Pos: pixel.V(300, 300),
+		Vel: pixel.V(0.3,0.3),
 	}
-
-	
 
 	imd := imdraw.New(nil)
 	imd.Precision = 32
@@ -190,15 +71,15 @@ func run() {
 		// imd drawings 
 		imd.Clear()
 		for _, b := range blocks {
-			b.draw(imd)
+			b.Draw(imd)
 		}
-		test_player.draw(imd)
-		test_ball.draw(imd)
+		player.Draw(imd)
+		test_ball.Draw(imd)
 		imd.Draw(win)
 
 		// update
-		test_player.update(dt, *win)
-		test_ball.update(dt, win)
+		player.Update(dt, *win)
+		blocks = test_ball.Update(dt, win, blocks, player)
 		win.Update()
 	}
 	
