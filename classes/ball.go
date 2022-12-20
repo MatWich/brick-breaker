@@ -1,19 +1,18 @@
 package classes
 
 import (
-	"image/color"
-	"math"
-
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
+	"image/color"
+	"math"
 )
 
 type Ball struct {
-	Rect pixel.Circle
+	Rect  pixel.Circle
 	Color color.Color
-	Pos pixel.Vec
-	Vel pixel.Vec
+	Pos   pixel.Vec
+	Vel   pixel.Vec
 }
 
 func (b *Ball) Draw(imd *imdraw.IMDraw) {
@@ -22,17 +21,16 @@ func (b *Ball) Draw(imd *imdraw.IMDraw) {
 	imd.Circle(15, 0)
 }
 
-func (b * Ball) Update(dt float64, win *pixelgl.Window, blocks []Block, player Player) []Block {
+func (b *Ball) Update(dt float64, win *pixelgl.Window, blocks []Block, player *Player) []Block {
 	b.Pos.X += b.Vel.X
 	b.Pos.Y += b.Vel.Y
 
-
 	// collision with walls
-	if b.Pos.X - b.Rect.Radius < 0 || b.Pos.X + b.Rect.Radius > win.Bounds().W() {
+	if b.Pos.X-b.Rect.Radius < 0 || b.Pos.X+b.Rect.Radius > win.Bounds().W() {
 		b.Vel.X *= -1
 	}
 
-	if b.Pos.Y - b.Rect.Radius < 0 || b.Pos.Y + b.Rect.Radius > win.Bounds().H() {
+	if b.Pos.Y-b.Rect.Radius < 0 || b.Pos.Y+b.Rect.Radius > win.Bounds().H() {
 		b.Vel.Y *= -1
 	}
 
@@ -40,9 +38,9 @@ func (b * Ball) Update(dt float64, win *pixelgl.Window, blocks []Block, player P
 	toDelete := []int{}
 	for i, blk := range blocks {
 		collision := b.Rect.IntersectRect(blk.Rect)
-		 
-		if (b.Rect.IntersectRect(blk.Rect) != pixel.V(-0, -0)) {
-			
+
+		if b.Rect.IntersectRect(blk.Rect) != pixel.V(-0, -0) {
+
 			if math.Abs(collision.Y) > math.Abs(collision.X) {
 				b.Vel.Y *= -1
 				toDelete = append(toDelete, i)
@@ -52,7 +50,7 @@ func (b * Ball) Update(dt float64, win *pixelgl.Window, blocks []Block, player P
 				toDelete = append(toDelete, i)
 			}
 		}
-		
+
 	}
 
 	for _, i := range toDelete {
@@ -64,13 +62,13 @@ func (b * Ball) Update(dt float64, win *pixelgl.Window, blocks []Block, player P
 	if collision != pixel.V(-0, -0) {
 		if math.Abs(collision.Y) > math.Abs(collision.X) {
 			b.Vel.Y *= -1
-			b.Pos.Y += 2 * b.Vel.Y +collision.Y
+			b.Pos.Y += 2*b.Vel.Y + collision.Y
 		} else {
 			b.Vel.X *= -1
-			b.Pos.X += 2 * b.Vel.X + collision.X
+			b.Pos.X += 2*b.Vel.X + collision.X
 		}
-	} 
-		
+	}
+
 	b.Rect.Center.X = b.Pos.X
 	b.Rect.Center.Y = b.Pos.Y
 

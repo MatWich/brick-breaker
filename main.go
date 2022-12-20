@@ -1,88 +1,49 @@
 package main
 
 import (
-	"time"
-
-	"github.com/faiface/pixel"
+	"github.com/MatWich/brick-breaker/classes"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
-	"github.com/MatWich/brick-breaker/classes"
+	"time"
 )
-var blocks []classes.Block = []classes.Block{}
 
-var player = classes.Player {
-	Color: colornames.Springgreen,
-	Rect: pixel.R(300 - 100, 50, 300 + 100, 75),
-	Vel: pixel.V(0.2, 0.2),
-}
-
-func createWindow() *pixelgl.Window {
-	cfg :=pixelgl.WindowConfig{
-		Title: "Brick Breaker",
-		Bounds: pixel.R(0, 0, 1024, 768),
-		VSync: false,
-		
-	}
-	win, err := pixelgl.NewWindow(cfg)
-	if err != nil {
-		panic(err)
-	}
-	win.SetSmooth(true)
-	
-	return win
-}
+var game = classes.Game{}
 
 func run() {
-	win := createWindow()
 
 	// Create stuff
-	
-	delimeter := 15.0
-	var spaceForBlocksLastLine = 100.0
-	
-	var currentStart = 0.0
-	for i := 0; i < 7; i++ {
-		currentStart += delimeter
-		blocks = append(blocks, classes.Block{
-			Color: colornames.Beige,
-			Rect: pixel.R(currentStart, win.Bounds().H() -100, currentStart + spaceForBlocksLastLine + delimeter, win.Bounds().H() - 50),
-		})
-		currentStart += spaceForBlocksLastLine + delimeter
-	}
 
-	test_ball := classes.Ball {
-		Color: colornames.Green,
-		Rect: pixel.C(pixel.V(win.Bounds().W(), win.Bounds().H()), 15),
-		Pos: pixel.V(300, 300),
-		Vel: pixel.V(0.3,0.3),
-	}
+	game.CreateWindow()
+	game.CreateBlocks()
+	game.CreateBall()
+	game.CreatePlayer()
 
 	imd := imdraw.New(nil)
 	imd.Precision = 32
 
+	// Main loop
 	last := time.Now()
-	for !win.Closed() {
+	for !game.Window.Closed() {
 		dt := time.Since(last).Seconds()
 		last = time.Now()
-		win.Clear(colornames.Darkslateblue)
-		
-		
-		// imd drawings 
+		game.Window.Clear(colornames.Darkslateblue)
+
+		// imd drawings
 		imd.Clear()
-		for _, b := range blocks {
+		for _, b := range game.GetBlocks() {
 			b.Draw(imd)
 		}
-		player.Draw(imd)
-		test_ball.Draw(imd)
-		imd.Draw(win)
+		game.GetPlayer().Draw(imd)
+		game.GetBall().Draw(imd)
+		imd.Draw(game.Window)
 
 		// update
-		player.Update(dt, *win)
-		blocks = test_ball.Update(dt, win, blocks, player)
-		win.Update()
+		game.GetPlayer().Update(dt, *game.Window)
+		game.SetBlocks(game.GetBall().Update(dt, game.Window, game.GetBlocks(), game.GetPlayer()))
+		game.Window.Update()
 	}
-	
+
 }
 
 func main() {

@@ -8,7 +8,7 @@ import (
 )
 
 type Block struct {
-	Rect pixel.Rect
+	Rect  pixel.Rect
 	Color color.Color
 }
 
