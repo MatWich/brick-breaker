@@ -3,7 +3,6 @@ package classes
 import (
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
-	"github.com/faiface/pixel/pixelgl"
 	"image/color"
 	"math"
 )
@@ -21,22 +20,22 @@ func (b *Ball) Draw(imd *imdraw.IMDraw) {
 	imd.Circle(15, 0)
 }
 
-func (b *Ball) Update(dt float64, win *pixelgl.Window, blocks []Block, player *Player) []Block {
+func (b *Ball) Update(dt float64, game *Game) {
 	b.Pos.X += b.Vel.X
 	b.Pos.Y += b.Vel.Y
 
 	// collision with walls
-	if b.Pos.X-b.Rect.Radius < 0 || b.Pos.X+b.Rect.Radius > win.Bounds().W() {
+	if b.Pos.X-b.Rect.Radius < 0 || b.Pos.X+b.Rect.Radius > game.Window.Bounds().W() {
 		b.Vel.X *= -1
 	}
 
-	if b.Pos.Y-b.Rect.Radius < 0 || b.Pos.Y+b.Rect.Radius > win.Bounds().H() {
+	if b.Pos.Y-b.Rect.Radius < 0 || b.Pos.Y+b.Rect.Radius > game.Window.Bounds().H() {
 		b.Vel.Y *= -1
 	}
 
 	// colision with block
 	toDelete := []int{}
-	for i, blk := range blocks {
+	for i, blk := range game.GetBlocks() {
 		collision := b.Rect.IntersectRect(blk.Rect)
 
 		if b.Rect.IntersectRect(blk.Rect) != pixel.V(-0, -0) {
@@ -54,11 +53,13 @@ func (b *Ball) Update(dt float64, win *pixelgl.Window, blocks []Block, player *P
 	}
 
 	for _, i := range toDelete {
-		blocks = append(blocks[:i], blocks[i+1:]...)
+		newBlocks := game.GetBlocks()
+		newBlocks = append(newBlocks[:i], newBlocks[i+1:]...)
+		game.SetBlocks(newBlocks)
 	}
 
 	// colision with player
-	var collision = b.Rect.IntersectRect(player.Rect)
+	var collision = b.Rect.IntersectRect(game.GetPlayer().Rect)
 	if collision != pixel.V(-0, -0) {
 		if math.Abs(collision.Y) > math.Abs(collision.X) {
 			b.Vel.Y *= -1
@@ -71,6 +72,4 @@ func (b *Ball) Update(dt float64, win *pixelgl.Window, blocks []Block, player *P
 
 	b.Rect.Center.X = b.Pos.X
 	b.Rect.Center.Y = b.Pos.Y
-
-	return blocks
 }

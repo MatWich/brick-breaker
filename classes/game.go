@@ -11,6 +11,7 @@ type Game struct {
 	Window *pixelgl.Window
 	ball   Ball
 	blocks []Block
+	ScoreBoard ScoreBoard
 }
 
 // GETTERS AND SETTERS
@@ -81,4 +82,11 @@ func (g *Game) CreatePlayer() {
 		Rect:  pixel.R(300-100, 50, 300+100, 75),
 		Vel:   pixel.V(0.2, 0.2),
 	}
+}
+
+func (g *Game) CreateScoreBoard() {
+	g.ScoreBoard = ScoreBoard{
+		Score: 0,
+	}
+	g.ScoreBoard.Init()
 }
