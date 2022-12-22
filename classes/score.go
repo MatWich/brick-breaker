@@ -11,20 +11,17 @@ import (
 	"golang.org/x/image/font"
 )
 
-
-
 type ScoreBoard struct {
-	score int
-	scoreText string
+	score       int
+	scoreText   string
 	scoreWriter *text.Text
-	atlas  *text.Atlas
-	face font.Face
+	atlas       *text.Atlas
+	face        font.Face
 }
 
 func (sc *ScoreBoard) GetScoreWriter() *text.Text {
 	return sc.scoreWriter
 }
-
 
 func (sc *ScoreBoard) Init() {
 	sc.scoreText = "Score"
@@ -36,13 +33,12 @@ func (sc *ScoreBoard) Init() {
 
 func (sc *ScoreBoard) Update(dt float64, game *Game) {
 	sc.scoreWriter.Clear()
-	fmt.Fprintf(sc.scoreWriter ,fmt.Sprintf("%s: %d", sc.scoreText, sc.score))
+	fmt.Fprintf(sc.scoreWriter, fmt.Sprintf("%s: %d", sc.scoreText, sc.score))
 }
 
 func (sc *ScoreBoard) setAtlas() {
 	sc.atlas = text.NewAtlas(sc.face, text.ASCII)
 }
-
 
 func (sc *ScoreBoard) setFace(path string, size float64) {
 	file, err := os.Open(path)
@@ -61,7 +57,7 @@ func (sc *ScoreBoard) setFace(path string, size float64) {
 		return
 	}
 
-	sc.face =  truetype.NewFace(font, &truetype.Options{
+	sc.face = truetype.NewFace(font, &truetype.Options{
 		Size:              size,
 		GlyphCacheEntries: 1,
 	})

@@ -1,13 +1,12 @@
 package main
 
 import (
-	"time"
-
 	"github.com/MatWich/brick-breaker/classes"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
+	"time"
 )
 
 var game = classes.Game{}
@@ -42,7 +41,7 @@ func run() {
 		imd.Draw(game.Window)
 
 		// update
-		game.GetPlayer().Update(dt, *game.Window)
+		game.GetPlayer().Update(dt, &game)
 		game.GetBall().Update(dt, &game)
 		game.ScoreBoard.Update(dt, &game)
 		game.Window.Update()

@@ -7,10 +7,10 @@ import (
 )
 
 type Game struct {
-	player Player
-	Window *pixelgl.Window
-	ball   Ball
-	blocks []Block
+	player     Player
+	Window     *pixelgl.Window
+	ball       Ball
+	blocks     []Block
 	ScoreBoard ScoreBoard
 }
 

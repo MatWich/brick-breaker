@@ -20,31 +20,31 @@ func (p *Player) Draw(imd *imdraw.IMDraw) {
 	imd.Rectangle(0)
 }
 
-func (p *Player) Update(dt float64, win pixelgl.Window) {
+func (p *Player) Update(dt float64, game *Game) {
 	// player movement
-	if win.Pressed(pixelgl.KeyLeft) {
+	if game.GetWindow().Pressed(pixelgl.KeyLeft) {
 		if !(p.Rect.Min.X-p.Vel.X < 0) {
 			p.Rect.Min.X -= p.Vel.X
 			p.Rect.Max.X -= p.Vel.X
 		}
 	}
 
-	if win.Pressed(pixelgl.KeyRight) {
-		if !(p.Rect.Max.X+p.Vel.X > win.Bounds().W()) {
+	if game.GetWindow().Pressed(pixelgl.KeyRight) {
+		if !(p.Rect.Max.X+p.Vel.X > game.GetWindow().Bounds().W()) {
 			p.Rect.Min.X += p.Vel.X
 			p.Rect.Max.X += p.Vel.X
 		}
 	}
 
 	// should not be able to go higher than 1/3 height of the screen
-	if win.Pressed(pixelgl.KeyUp) {
-		if !(p.Rect.Max.Y+p.Vel.Y > win.Bounds().H()/3) {
+	if game.GetWindow().Pressed(pixelgl.KeyUp) {
+		if !(p.Rect.Max.Y+p.Vel.Y > game.GetWindow().Bounds().H()/3) {
 			p.Rect.Min.Y += p.Vel.Y
 			p.Rect.Max.Y += p.Vel.Y
 		}
 	}
 
-	if win.Pressed(pixelgl.KeyDown) {
+	if game.GetWindow().Pressed(pixelgl.KeyDown) {
 		if !(p.Rect.Min.Y-p.Vel.Y < 0) {
 			p.Rect.Min.Y -= p.Vel.Y
 			p.Rect.Max.Y -= p.Vel.Y
