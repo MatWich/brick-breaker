@@ -14,7 +14,7 @@ import (
 
 
 type ScoreBoard struct {
-	Score int
+	score int
 	scoreText string
 	scoreWriter *text.Text
 	atlas  *text.Atlas
@@ -31,11 +31,12 @@ func (sc *ScoreBoard) Init() {
 	sc.setFace("intuitive.ttf", 25)
 	sc.setAtlas()
 	sc.scoreWriter = text.New(pixel.V(50, 500), sc.atlas)
+	sc.score = 0
 }
 
 func (sc *ScoreBoard) Update(dt float64, game *Game) {
 	sc.scoreWriter.Clear()
-	fmt.Fprintf(sc.scoreWriter ,fmt.Sprintf("%s: %d", sc.scoreText, sc.Score))
+	fmt.Fprintf(sc.scoreWriter ,fmt.Sprintf("%s: %d", sc.scoreText, sc.score))
 }
 
 func (sc *ScoreBoard) setAtlas() {
@@ -66,3 +67,6 @@ func (sc *ScoreBoard) setFace(path string, size float64) {
 	})
 }
 
+func (sc *ScoreBoard) ChangeScore(value int) {
+	sc.score = sc.score + value
+}

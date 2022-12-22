@@ -56,6 +56,7 @@ func (b *Ball) Update(dt float64, game *Game) {
 		newBlocks := game.GetBlocks()
 		newBlocks = append(newBlocks[:i], newBlocks[i+1:]...)
 		game.SetBlocks(newBlocks)
+		game.ScoreBoard.ChangeScore(10)
 	}
 
 	// colision with player

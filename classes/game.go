@@ -85,8 +85,6 @@ func (g *Game) CreatePlayer() {
 }
 
 func (g *Game) CreateScoreBoard() {
-	g.ScoreBoard = ScoreBoard{
-		Score: 0,
-	}
+	g.ScoreBoard = ScoreBoard{}
 	g.ScoreBoard.Init()
 }
