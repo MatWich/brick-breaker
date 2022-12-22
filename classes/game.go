@@ -54,16 +54,19 @@ func (g *Game) CreateWindow() {
 
 func (g *Game) CreateBlocks() {
 	delimeter := 15.0
-	var spaceForBlocksLastLine = 100.0
 
-	var currentStart = 0.0
+	window_width := g.GetWindow().Bounds().W()
+	space_for_block := window_width - delimeter * 8 
+	space_per_block := space_for_block / 7
+
+	var currentStart = delimeter
 	for i := 0; i < 7; i++ {
-		currentStart += delimeter
+
 		g.blocks = append(g.blocks, Block{
 			Color: colornames.Azure,
-			Rect:  pixel.R(currentStart, g.Window.Bounds().H()-100, currentStart+spaceForBlocksLastLine+delimeter, g.Window.Bounds().H()-50),
+			Rect:  pixel.R(currentStart, g.Window.Bounds().H()-100, currentStart+space_per_block, g.Window.Bounds().H()-50),
 		})
-		currentStart += spaceForBlocksLastLine + delimeter
+		currentStart += space_per_block + delimeter
 	}
 }
 
