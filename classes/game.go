@@ -53,20 +53,27 @@ func (g *Game) CreateWindow() {
 }
 
 func (g *Game) CreateBlocks() {
+	g.blocks = make([]Block, 0, 21)
 	delimeter := 15.0
 
 	window_width := g.GetWindow().Bounds().W()
-	space_for_block := window_width - delimeter * 8 
+	space_for_block := window_width - delimeter*8
 	space_per_block := space_for_block / 7
 
-	var currentStart = delimeter
-	for i := 0; i < 7; i++ {
+	window_height := g.GetWindow().Bounds().H()
+	block_height := 50.0
 
-		g.blocks = append(g.blocks, Block{
-			Color: colornames.Azure,
-			Rect:  pixel.R(currentStart, g.Window.Bounds().H()-100, currentStart+space_per_block, g.Window.Bounds().H()-50),
-		})
-		currentStart += space_per_block + delimeter
+	var currentStart = 0.0
+	for j := 0; j > -3; j-- {
+		currentStart = delimeter
+		for i := 0; i < 7; i++ {
+			g.blocks = append(g.blocks, Block{
+				Color: colornames.Azure,
+				Rect:  pixel.R(currentStart, window_height-100 + float64(j)*(block_height +delimeter), currentStart+space_per_block, window_height-50 + float64(j)*(block_height + delimeter)),
+			})
+			currentStart += space_per_block + delimeter
+		}
+		
 	}
 }
 
