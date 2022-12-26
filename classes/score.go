@@ -11,36 +11,50 @@ import (
 	"golang.org/x/image/font"
 )
 
-type ScoreBoard struct {
+type HUD struct {
 	score       int
 	scoreText   string
 	scoreWriter *text.Text
 	atlas       *text.Atlas
 	face        font.Face
+	lives       int
+	livesText   string
+	livesWriter *text.Text
 }
 
-func (sc *ScoreBoard) GetScoreWriter() *text.Text {
+func (sc *HUD) GetScoreWriter() *text.Text {
 	return sc.scoreWriter
 }
 
-func (sc *ScoreBoard) Init() {
+func (sc *HUD) GetLivesWritter() *text.Text {
+	return sc.livesWriter
+}
+
+func (sc *HUD) Init() {
+	// Score init
 	sc.scoreText = "Score"
 	sc.setFace("intuitive.ttf", 25)
 	sc.setAtlas()
 	sc.scoreWriter = text.New(pixel.V(50, 500), sc.atlas)
 	sc.score = 0
+	// Lives init
+	sc.lives = 3
+	sc.livesText = "Lives"
+	sc.livesWriter = text.New(pixel.V(920, 740), sc.atlas)
 }
 
-func (sc *ScoreBoard) Update(dt float64, game *Game) {
+func (sc *HUD) Update(dt float64, game *Game) {
 	sc.scoreWriter.Clear()
+	sc.livesWriter.Clear()
 	fmt.Fprintf(sc.scoreWriter, fmt.Sprintf("%s: %d", sc.scoreText, sc.score))
+	fmt.Fprintf(sc.livesWriter, fmt.Sprintf("%s: %d", sc.livesText, sc.lives))
 }
 
-func (sc *ScoreBoard) setAtlas() {
+func (sc *HUD) setAtlas() {
 	sc.atlas = text.NewAtlas(sc.face, text.ASCII)
 }
 
-func (sc *ScoreBoard) setFace(path string, size float64) {
+func (sc *HUD) setFace(path string, size float64) {
 	file, err := os.Open(path)
 	if err != nil {
 		return
@@ -63,6 +77,10 @@ func (sc *ScoreBoard) setFace(path string, size float64) {
 	})
 }
 
-func (sc *ScoreBoard) ChangeScore(value int) {
-	sc.score = sc.score + value
+func (sc *HUD) ChangeScore(value int) {
+	sc.score += value
+}
+
+func (sc *HUD) ChangeLives(value int) {
+	sc.lives += value
 }

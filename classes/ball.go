@@ -1,10 +1,11 @@
 package classes
 
 import (
-	"github.com/faiface/pixel"
-	"github.com/faiface/pixel/imdraw"
 	"image/color"
 	"math"
+
+	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
 )
 
 type Ball struct {
@@ -25,13 +26,20 @@ func (b *Ball) Update(dt float64, game *Game) {
 	b.Pos.Y += b.Vel.Y
 
 	// collision with walls
-	if b.Pos.X-b.Rect.Radius < 0 || b.Pos.X+b.Rect.Radius > game.Window.Bounds().W() {
+	if b.Pos.X-b.Rect.Radius < 0 || b.Pos.X+b.Rect.Radius > game.GetWindow().Bounds().W() {
 		b.Vel.X *= -1
 	}
 
-	if b.Pos.Y-b.Rect.Radius < 0 || b.Pos.Y+b.Rect.Radius > game.Window.Bounds().H() {
+	if b.Pos.Y-b.Rect.Radius < 0 {
+		b.Vel.Y *= -1
+		game.GetHUD().ChangeLives(-1)
+	}
+
+	if b.Pos.Y+b.Rect.Radius > game.GetWindow().Bounds().H() {
 		b.Vel.Y *= -1
 	}
+
+
 
 	// colision with block
 	toDelete := []int{}
@@ -56,7 +64,7 @@ func (b *Ball) Update(dt float64, game *Game) {
 		newBlocks := game.GetBlocks()
 		newBlocks = append(newBlocks[:i], newBlocks[i+1:]...)
 		game.SetBlocks(newBlocks)
-		game.ScoreBoard.ChangeScore(10)
+		game.GetHUD().ChangeScore(10)
 	}
 
 	// colision with player

@@ -11,7 +11,7 @@ type Game struct {
 	Window     *pixelgl.Window
 	ball       Ball
 	blocks     []Block
-	ScoreBoard ScoreBoard
+	hud HUD
 }
 
 // GETTERS AND SETTERS
@@ -33,6 +33,10 @@ func (g *Game) GetPlayer() *Player {
 
 func (g *Game) GetBall() *Ball {
 	return &g.ball
+}
+
+func (g *Game) GetHUD() *HUD {
+	return &g.hud
 }
 
 // INITIALIZATION
@@ -69,18 +73,18 @@ func (g *Game) CreateBlocks() {
 		for i := 0; i < 7; i++ {
 			g.blocks = append(g.blocks, Block{
 				Color: colornames.Azure,
-				Rect:  pixel.R(currentStart, window_height-100 + float64(j)*(block_height +delimeter), currentStart+space_per_block, window_height-50 + float64(j)*(block_height + delimeter)),
+				Rect:  pixel.R(currentStart, window_height-100+float64(j)*(block_height+delimeter), currentStart+space_per_block, window_height-50+float64(j)*(block_height+delimeter)),
 			})
 			currentStart += space_per_block + delimeter
 		}
-		
+
 	}
 }
 
 func (g *Game) CreateBall() {
 	g.ball = Ball{
 		Color: colornames.Green,
-		Rect:  pixel.C(pixel.V(g.Window.Bounds().W(), g.Window.Bounds().H()), 15),
+		Rect:  pixel.C(pixel.V(g.GetWindow().Bounds().W(), g.GetWindow().Bounds().H()), 15),
 		Pos:   pixel.V(300, 300),
 		Vel:   pixel.V(0.3, 0.3),
 	}
@@ -95,6 +99,6 @@ func (g *Game) CreatePlayer() {
 }
 
 func (g *Game) CreateScoreBoard() {
-	g.ScoreBoard = ScoreBoard{}
-	g.ScoreBoard.Init()
+	g.hud = HUD{}
+	g.hud.Init()
 }
