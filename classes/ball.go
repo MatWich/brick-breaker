@@ -3,9 +3,11 @@ package classes
 import (
 	"image/color"
 	"math"
+	"os"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
+	"github.com/ncruces/zenity"
 )
 
 type Ball struct {
@@ -33,6 +35,16 @@ func (b *Ball) Update(dt float64, game *Game) {
 	if b.Pos.Y-b.Rect.Radius < 0 {
 		b.Vel.Y *= -1
 		game.GetHUD().ChangeLives(-1)
+		if game.hud.GetLives() <= 0 {
+			// Should restart game if clicked Ok. "Cancel" should end a program.
+			err := zenity.Question("You have lost. Play again?")
+			if err != nil {
+				os.Exit(0)
+			} else {
+				game.Reset()
+			}
+
+		}
 	}
 
 	if b.Pos.Y+b.Rect.Radius > game.GetWindow().Bounds().H() {

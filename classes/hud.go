@@ -30,6 +30,10 @@ func (sc *HUD) GetLivesWritter() *text.Text {
 	return sc.livesWriter
 }
 
+func (sc *HUD) GetLives() int {
+	return sc.lives
+}
+
 func (sc *HUD) Init() {
 	// Score init
 	sc.scoreText = "Score"

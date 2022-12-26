@@ -1,6 +1,8 @@
 package classes
 
 import (
+	"fmt"
+
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
@@ -101,4 +103,9 @@ func (g *Game) CreatePlayer() {
 func (g *Game) CreateScoreBoard() {
 	g.hud = HUD{}
 	g.hud.Init()
+}
+
+
+func (g *Game) Reset() {
+	fmt.Println("Reset")
 }
