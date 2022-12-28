@@ -107,5 +107,8 @@ func (g *Game) CreateScoreBoard() {
 
 
 func (g *Game) Reset() {
-	fmt.Println("Reset")
+	g.CreateBall()
+	g.CreatePlayer()
+	g.CreateBlocks()
+	g.hud.Reset()
 }

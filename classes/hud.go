@@ -22,43 +22,43 @@ type HUD struct {
 	livesWriter *text.Text
 }
 
-func (sc *HUD) GetScoreWriter() *text.Text {
-	return sc.scoreWriter
+func (hud *HUD) GetScoreWriter() *text.Text {
+	return hud.scoreWriter
 }
 
-func (sc *HUD) GetLivesWritter() *text.Text {
-	return sc.livesWriter
+func (hud *HUD) GetLivesWritter() *text.Text {
+	return hud.livesWriter
 }
 
-func (sc *HUD) GetLives() int {
-	return sc.lives
+func (hud *HUD) GetLives() int {
+	return hud.lives
 }
 
-func (sc *HUD) Init() {
+func (hud *HUD) Init() {
 	// Score init
-	sc.scoreText = "Score"
-	sc.setFace("intuitive.ttf", 25)
-	sc.setAtlas()
-	sc.scoreWriter = text.New(pixel.V(50, 500), sc.atlas)
-	sc.score = 0
+	hud.scoreText = "Score"
+	hud.setFace("intuitive.ttf", 25)
+	hud.setAtlas()
+	hud.scoreWriter = text.New(pixel.V(50, 500), hud.atlas)
+	hud.score = 0
 	// Lives init
-	sc.lives = 3
-	sc.livesText = "Lives"
-	sc.livesWriter = text.New(pixel.V(920, 740), sc.atlas)
+	hud.lives = 3
+	hud.livesText = "Lives"
+	hud.livesWriter = text.New(pixel.V(920, 740), hud.atlas)
 }
 
-func (sc *HUD) Update(dt float64, game *Game) {
-	sc.scoreWriter.Clear()
-	sc.livesWriter.Clear()
-	fmt.Fprintf(sc.scoreWriter, fmt.Sprintf("%s: %d", sc.scoreText, sc.score))
-	fmt.Fprintf(sc.livesWriter, fmt.Sprintf("%s: %d", sc.livesText, sc.lives))
+func (hud *HUD) Update(dt float64, game *Game) {
+	hud.scoreWriter.Clear()
+	hud.livesWriter.Clear()
+	fmt.Fprintf(hud.scoreWriter, fmt.Sprintf("%s: %d", hud.scoreText, hud.score))
+	fmt.Fprintf(hud.livesWriter, fmt.Sprintf("%s: %d", hud.livesText, hud.lives))
 }
 
-func (sc *HUD) setAtlas() {
-	sc.atlas = text.NewAtlas(sc.face, text.ASCII)
+func (hud *HUD) setAtlas() {
+	hud.atlas = text.NewAtlas(hud.face, text.ASCII)
 }
 
-func (sc *HUD) setFace(path string, size float64) {
+func (hud *HUD) setFace(path string, size float64) {
 	file, err := os.Open(path)
 	if err != nil {
 		return
@@ -75,16 +75,21 @@ func (sc *HUD) setFace(path string, size float64) {
 		return
 	}
 
-	sc.face = truetype.NewFace(font, &truetype.Options{
+	hud.face = truetype.NewFace(font, &truetype.Options{
 		Size:              size,
 		GlyphCacheEntries: 1,
 	})
 }
 
-func (sc *HUD) ChangeScore(value int) {
-	sc.score += value
+func (hud *HUD) ChangeScore(value int) {
+	hud.score += value
 }
 
-func (sc *HUD) ChangeLives(value int) {
-	sc.lives += value
+func (hud *HUD) ChangeLives(value int) {
+	hud.lives += value
+}
+
+func (hud *HUD) Reset() {
+	hud.lives = 3
+	hud.score = 0
 }

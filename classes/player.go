@@ -12,6 +12,7 @@ type Player struct {
 	Rect  pixel.Rect
 	Vel   pixel.Vec
 	Color color.Color
+
 }
 
 func (p *Player) Draw(imd *imdraw.IMDraw) {
