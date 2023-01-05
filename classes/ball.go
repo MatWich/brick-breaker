@@ -41,7 +41,7 @@ func (b *Ball) Update(dt float64, game *Game) {
 			if err != nil {
 				os.Exit(0)
 			} else {
-				game.Reset()
+				game.Reset(true)
 			}
 
 		}
@@ -77,6 +77,10 @@ func (b *Ball) Update(dt float64, game *Game) {
 		newBlocks = append(newBlocks[:i], newBlocks[i+1:]...)
 		game.SetBlocks(newBlocks)
 		game.GetHUD().ChangeScore(10)
+	}
+	// Reset if all blocks got destroyed
+	if len(game.blocks) == 0 {
+		game.Reset(false)
 	}
 
 	// colision with player

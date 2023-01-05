@@ -1,8 +1,6 @@
 package classes
 
 import (
-	"fmt"
-
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
 	"golang.org/x/image/colornames"
@@ -96,7 +94,7 @@ func (g *Game) CreatePlayer() {
 	g.player = Player{
 		Color: colornames.Springgreen,
 		Rect:  pixel.R(300-100, 50, 300+100, 75),
-		Vel:   pixel.V(0.2, 0.2),
+		Vel:   pixel.V(0.3, 0.3),
 	}
 }
 
@@ -106,9 +104,11 @@ func (g *Game) CreateScoreBoard() {
 }
 
 
-func (g *Game) Reset() {
+func (g *Game) Reset(full bool) {
 	g.CreateBall()
-	g.CreatePlayer()
 	g.CreateBlocks()
-	g.hud.Reset()
+	if full {
+		g.hud.Reset()
+		g.CreatePlayer()
+	}
 }
